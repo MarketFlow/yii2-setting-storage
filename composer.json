@@ -1,5 +1,5 @@
 {
-    "name": "marketflow/yii2-settings-storage",
+    "name": "marketflow/yii2-setting-storage",
     "description": "Store settings in active record",
     "license": "MIT",
     "authors": [
