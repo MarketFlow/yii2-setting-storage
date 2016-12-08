@@ -1,0 +1,19 @@
+{
+    "name": "marketflow/yii2-settings-storage",
+    "description": "Store settings in active record",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Joey Claessen",
+            "email": "joey_claessen@hotmail.com"
+        }
+    ],
+    "require": {
+        "marketflow/settings-manager": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "MarketFlow\\StorageManager\\": ["src/"]
+        }
+    }
+}
