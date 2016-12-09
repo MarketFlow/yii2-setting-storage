@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "marketflow/settings-manager": "v0.1.1"
+        "marketflow/settings-manager": "v0.1.2"
     },
     "autoload": {
         "psr-4": {
