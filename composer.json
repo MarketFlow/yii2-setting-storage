@@ -6,10 +6,14 @@
         {
             "name": "Joey Claessen",
             "email": "joey_claessen@hotmail.com"
-        }
+        },
+        {
+            "name": "Sam Mousa",
+            "email": "sam@mousa.nl"
+        }        
     ],
     "require": {
-        "marketflow/settings-manager": "v0.1.2"
+        "marketflow/settings-manager": "^0.2.0"
     },
     "autoload": {
         "psr-4": {
