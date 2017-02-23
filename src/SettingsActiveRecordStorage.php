@@ -30,6 +30,8 @@ class SettingsActiveRecordStorage extends Object implements StorageInterface
     public $applicationValue;
     public $applicationScenario = 'default';
 
+    private $cache = [];
+
     public function init()
     {
         parent::init();
@@ -90,13 +92,19 @@ class SettingsActiveRecordStorage extends Object implements StorageInterface
 
     private function getSettingObject($key)
     {
-        $class = $this->settingClass;
-        $result = $class::find()
-            ->where([
-                $this->settingId => $this->settingPrefix . $key
-            ])
-            ->one();
-        return $result;
+        $settingId = $this->settingPrefix . $key;
+
+        if (!isset($this->cache[$settingId])) {
+            $class = $this->settingClass;
+            $this->cache[$settingId] = $class::find()
+                ->where([
+                    $this->settingId => $settingId
+                ])
+                ->one();
+        }
+
+
+        return $this->cache[$settingId];
     }
 
     public function getSetting($key)
@@ -107,28 +115,40 @@ class SettingsActiveRecordStorage extends Object implements StorageInterface
     public function setSetting($key, $value)
     {
         $setting = $this->getSettingObject($key);
+        $settingId = $this->settingPrefix . $key;
+
         if (is_null($setting)) {
             $class = $this->settingClass;
             $setting = new $class([
-                $this->settingId => $this->settingPrefix . $key
+                $this->settingId => $settingId
             ]);
         }
 
         $setting->scenario = $this->settingScenario;
         $setting->{$this->settingValue} = $value;
 
-        return $setting->save();
+        if ($result = $setting->save()) {
+            $this->cache[$settingId] = $setting;
+        }
+
+        return $result;
     }
 
     private function getApplicationSettingObect($key)
     {
-        $class = $this->applicationClass;
-        $result = $class::find()
-            ->where([
-                $this->applicationId => $this->applicationPrefix . $key
-            ])
-            ->one();
-        return $result;
+        $settingId = $this->applicationPrefix . $key;
+
+        if (!isset($this->cache[$settingId])) {
+            $class = $this->applicationClass;
+            $this->cache[$settingId] = $class::find()
+                ->where(
+                    [
+                        $this->applicationId => $settingId
+                    ]
+                )
+                ->one();
+        }
+        return $this->cache[$settingId];
     }
 
     public function getApplicationSetting($key)
@@ -139,30 +159,42 @@ class SettingsActiveRecordStorage extends Object implements StorageInterface
     public function setApplicationSetting($key, $value)
     {
         $setting = $this->getApplicationSettingObect($key);
+        $settingId = $this->applicationPrefix . $key;
+
         if (is_null($setting)) {
             $class = $this->applicationClass;
             $setting = new $class([
-                $this->applicationId => $this->applicationPrefix . $key
+                $this->applicationId => $settingId
             ]);
         }
 
         $setting->scenario = $this->applicationScenario;
         $setting->{$this->applicationValue} = $value;
 
-        return $setting->save();
+        if ($result = $setting->save()) {
+            $this->cache[$settingId] = $setting;
+        }
+
+        return $result;
     }
 
     private function getUserSettingObject($userId, $key)
     {
         $prefix = str_replace('{userId}', $userId, $this->userPrefix);
+        $settingId = $prefix . $key;
 
-        $class = $this->userClass;
-        $result = $class::find()
-            ->where([
-                $this->userId => $prefix . $key
-            ])
-            ->one();
-        return $result;
+        if (!isset($this->cache[$settingId])) {
+            $class = $this->userClass;
+            $this->cache[$settingId] = $class::find()
+                ->where(
+                    [
+                        $this->userId => $settingId
+                    ]
+                )
+                ->one();
+        }
+
+        return $this->cache[$settingId];
     }
 
     public function getUserSetting($userId, $key)
@@ -173,19 +205,24 @@ class SettingsActiveRecordStorage extends Object implements StorageInterface
     public function setUserSetting($userId, $key, $value)
     {
         $setting = $this->getUserSettingObject($userId, $key);
+        $prefix = str_replace('{userId}', $userId, $this->userPrefix);
+        $settingId = $prefix . $key;
 
         if (is_null($setting)) {
-            $prefix = str_replace('{userId}', $userId, $this->userPrefix);
             $class = $this->userClass;
             $setting = new $class([
-                $this->userId => $prefix . $key
+                $this->userId => $settingId
             ]);
         }
 
         $setting->scenario = $this->userScenario;
         $setting->{$this->userValue} = $value;
 
-        return $setting->save();
+        if ($result = $setting->save()) {
+            $this->cache[$settingId] = $setting;
+        }
+
+        return $result;
     }
 
 }
