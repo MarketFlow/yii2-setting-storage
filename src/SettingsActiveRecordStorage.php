@@ -4,10 +4,10 @@ namespace MarketFlow\SettingsStorage;
 
 use MarketFlow\SettingsManager\interfaces\StorageInterface;
 use yii\base\InvalidConfigException;
-use yii\base\Object;
+use yii\base\BaseObject;
 use yii\db\ActiveRecord;
 
-class SettingsActiveRecordStorage extends Object implements StorageInterface
+class SettingsActiveRecordStorage extends BaseObject implements StorageInterface
 {
     /** @var ActiveRecord */
     public $userClass;
